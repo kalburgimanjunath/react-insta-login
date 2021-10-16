@@ -1,4 +1,7 @@
-import firebase from 'firebase';
+import { initializeApp, auth } from 'firebase/app';
+import { getFirestore, collection, getDocs } from 'firebase/firestore/lite';
+// import '@firebase/auth';
+
 const firebaseConfig = {
   apiKey: 'AIzaSyBHem8oGB8C8md6HGECGOAjAUh3Kurnhpc',
   authDomain: 'instagram-clone-3862e.firebaseapp.com',
@@ -9,78 +12,95 @@ const firebaseConfig = {
   measurementId: 'G-8BWN1DZP8V',
 };
 
-const app = firebase.initializeApp(firebaseConfig);
-const auth = app.auth();
-const db = app.firestore();
-const googleProvider = new firebase.auth.GoogleAuthProvider();
+const app = initializeApp(firebaseConfig);
 
-const signInWithGoogle = async () => {
-  try {
-    const res = await auth.signInWithPopup(googleProvider);
-    const user = res.user;
-    const query = await db
-      .collection('users')
-      .where('uid', '==', user.uid)
-      .get();
-    if (query.docs.length === 0) {
-      await db.collection('users').add({
-        uid: user.uid,
-        name: user.displayName,
-        authProvider: 'google',
-        email: user.email,
-      });
-    }
-  } catch (err) {
-    console.error(err);
-    alert(err.message);
-  }
-};
+const db = getFirestore(app);
+// const auth = app.auth;
 
-const signInWithEmailAndPassword = async (email, password) => {
-  try {
-    await auth.signInWithEmailAndPassword(email, password);
-  } catch (err) {
-    console.error(err);
-    alert(err.message);
-  }
-};
+// const googleProvider = new auth.GoogleAuthProvider();
 
-const registerWithEmailAndPassword = async (name, email, password) => {
-  try {
-    const res = await auth.createUserWithEmailAndPassword(email, password);
-    const user = res.user;
-    await db.collection('users').add({
-      uid: user.uid,
-      name,
-      authProvider: 'local',
-      email,
-    });
-  } catch (err) {
-    console.error(err);
-    alert(err.message);
-  }
-};
+async function getCities(db) {
+  const citiesCol = collection(db, 'cities');
+  const citySnapshot = await getDocs(citiesCol);
+  const cityList = citySnapshot.docs.map((doc) => doc.data());
+  console.log(cityList);
+  return cityList;
+}
+async function displayCities() {
+  return getCities(db);
+}
 
-const sendPasswordResetEmail = async (email) => {
-  try {
-    await auth.sendPasswordResetEmail(email);
-    alert('Password reset link sent!');
-  } catch (err) {
-    console.error(err);
-    alert(err.message);
-  }
-};
+// const signInWithGoogle = async () => {
+//   try {
+//     const res = await auth.signInWithPopup(googleProvider);
+//     const user = res.user;
+//     const query = await db
+//       .collection('users')
+//       .where('uid', '==', user.uid)
+//       .get();
+//     if (query.docs.length === 0) {
+//       await db.collection('users').add({
+//         uid: user.uid,
+//         name: user.displayName,
+//         authProvider: 'google',
+//         email: user.email,
+//       });
+//     }
+//   } catch (err) {
+//     console.error(err);
+//     alert(err.message);
+//   }
+// };
 
-const logout = () => {
-  auth.signOut();
-};
+// const signInWithEmailAndPassword = async (email, password) => {
+//   try {
+//     await auth.signInWithEmailAndPassword(email, password);
+//   } catch (err) {
+//     console.error(err);
+//     alert(err.message);
+//   }
+// };
 
+// const registerWithEmailAndPassword = async (name, email, password) => {
+//   try {
+//     const res = await auth.createUserWithEmailAndPassword(email, password);
+//     const user = res.user;
+//     await db.collection('users').add({
+//       uid: user.uid,
+//       name,
+//       authProvider: 'local',
+//       email,
+//     });
+//   } catch (err) {
+//     console.error(err);
+//     alert(err.message);
+//   }
+// };
+
+// const sendPasswordResetEmail = async (email) => {
+//   try {
+//     await auth.sendPasswordResetEmail(email);
+//     alert('Password reset link sent!');
+//   } catch (err) {
+//     console.error(err);
+//     alert(err.message);
+//   }
+// };
+
+// const logout = () => {
+//   auth.signOut();
+// };
+
+// export default {
+//   auth,
+//   db,
+//   signInWithGoogle,
+//   signInWithEmailAndPassword,
+//   registerWithEmailAndPassword,
+//   sendPasswordResetEmail,
+//   logout,
+// };
 export default {
   auth,
-  db,
-  signInWithGoogle,
-  signInWithEmailAndPassword,
-  registerWithEmailAndPassword,
-  sendPasswordResetEmail,
-  logout,
+  displayCities,
 };

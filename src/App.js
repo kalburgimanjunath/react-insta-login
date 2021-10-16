@@ -14,6 +14,7 @@ import {
   Signup,
   Login,
 } from './pages/index';
+import { auth } from './_helpers/firebase';
 export default function App() {
   return (
     <div>

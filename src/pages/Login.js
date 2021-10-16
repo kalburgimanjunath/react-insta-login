@@ -1,13 +1,23 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
-import { auth } from '../_helpers/firebase';
-import { useAuthState } from 'react-firebase-hooks/auth';
+import * as firebase from '../_helpers/firebase';
+// import { useAuthState } from 'react-firebase-hooks/auth';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [user, loading, error] = useAuthState(auth);
+  const [user, loading, error] = useState(''); //useAuthState(auth);
   const history = useHistory();
+  const signInWithEmailAndPassword = async (email, password) => {
+    try {
+      //await auth.signInWithEmailAndPassword(email, password);
+      const test = firebase.getCities;
+      alert(email + password);
+    } catch (err) {
+      console.error(err);
+      alert(err.message);
+    }
+  };
 
   useEffect(() => {
     if (loading) {
@@ -39,9 +49,9 @@ export default function Login() {
         >
           Login
         </button>
-        <button className="login__btn login__google" onClick={signInWithGoogle}>
+        {/* <button className="login__btn login__google" onClick={signInWithGoogle}>
           Login with Google
-        </button>
+        </button> */}
         <div>
           <Link to="/reset">Forgot Password</Link>
         </div>
